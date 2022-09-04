@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void exitProgram()
 {
@@ -12,6 +13,7 @@ void exitProgram()
     while (1)
     {
         scanf("%d", &opc);
+        fflush(stdin);
 
         switch (opc)
         {
@@ -35,10 +37,11 @@ int main()
 
     while (1)
     {
-        system("clear");
+        // system("clear");
         printf("Selecione uma opcao.\n\n");
         printf("Cadastro - 1\nRelatorios - 2\nSair - 3\n\n");
         scanf("%d", &menu);
+        fflush(stdin);
 
         switch (menu)
         {
