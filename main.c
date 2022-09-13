@@ -1,23 +1,8 @@
+#include "./src/login.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-int emailIsValid(char *email) {
-
-  printf("%c", email);
-
-  return 1;
-}
-
-int login() {
-  char login[20];
-  char password[8];
-
-  printf("Coloque seu email.\n\n");
-  fgets(login, 20, stdin);
-  emailIsValid(login[20]);
-  return 1;
-}
 
 void exitProgram() {
   int opc;
@@ -32,7 +17,7 @@ void exitProgram() {
 
     switch (opc) {
     case 1:
-      printf("Saindo..\n");
+      printf("Saindo...\n");
       exit(0);
       break;
     case 0:
