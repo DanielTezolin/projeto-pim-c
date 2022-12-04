@@ -16,6 +16,7 @@ typedef struct
 } user;
 
 void exitProgram(void);
+void enterToContinue(void);
 
 void mainAccess(void);
 void userAccess(void);
@@ -26,6 +27,8 @@ void tratamento_cpf(char *tcpf, int tcpf_size);
 
 void newUser(void);
 void removeUser(void);
+void listUser(void);
+void searchUser(void);
 
 int main(void);
 
@@ -112,10 +115,10 @@ void userAccess()
   switch (menu)
   {
   case 1:
-    printf("Lista de Usuários .\n");
+    listUser();
     break;
   case 2:
-    printf("Buscar Usuários.\n");
+    searchUser();
     break;
   case 3:
     removeUser();
@@ -131,7 +134,7 @@ void userAccess()
     break;
   }
 
-  // userAccess();
+  userAccess();
 }
 
 void newUser()
@@ -169,16 +172,21 @@ void newUser()
   fprintf(file, "%s,%s,%s,%s\n", user_cad.nome, user_cad.cpf, user_cad.email, user_cad.senha);
   fclose(file);
 
-  return;
+  printf("usuário cadastrado com sucesso\n");
+  enterToContinue();
+  userAccess();
 }
 
 void removeUser()
 {
-  printf("\n\nteste\n");
+  system("clear");
+
   FILE *file;
   FILE *file_temp;
 
   char cpf_busca[12];
+  char linha_csv[216];
+
   user cusuario;
 
   file = fopen("data/users.csv", "r");
@@ -190,31 +198,303 @@ void removeUser()
     return;
   }
 
-  file_temp = fopen("data/users_temp.csv", "w");
+  file_temp = fopen("data/users_temp.csv", "a");
 
-  if (file == NULL)
+  if (file_temp == NULL)
   {
     printf("\n\nErro para criar arquivo temporário, não foi possível carregar essa função.");
     return;
   }
 
-  // printf("Para deletar um usuario, insira o CPF do usuario: ");
-  // scanf("%s", cpf_busca);
+  printf("Para deletar um usuario, insira o CPF do usuario: ");
+  scanf("%s", cpf_busca);
 
-  while (fscanf(file, "%[^,],%[^,],%[^,],%[^,]\n", cusuario.nome, cusuario.cpf, cusuario.email, cusuario.senha) == EOF)
+  int isExistUser = 0;
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
   {
-    printf("nao excluir => %s-%s-%s-%s\n", cusuario.nome, cusuario.cpf, cusuario.email, cusuario.senha);
-    // if (strcmp(cpf_busca, cusuario.cpf) != 0)
-    // {
-    //   printf("3 %s\n", cusuario.nome);
-    //   printf("nao excluir => %s-%s-%s-%s\n", cusuario.nome, cusuario.cpf, cusuario.email, cusuario.senha);
-    // }
-    // else
-    // {
-    //   printf("excluir => %s,%s,%s,%s\n", cusuario.nome, cusuario.cpf, cusuario.email, cusuario.senha);
-    // }
+    column = 0;
+    row++;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+
+        strcpy(cusuario.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(cusuario.cpf, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(cusuario.email, value);
+      }
+
+      // Column senha
+      if (column == 3)
+      {
+        strcpy(cusuario.senha, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    // verificar o CPF inserido
+    if (strcmp(cpf_busca, cusuario.cpf) != 0)
+    {
+      // printf("name: %s \n", cusuario.nome);
+      fprintf(file_temp, "%s,%s,%s,%s", cusuario.nome, cusuario.cpf, cusuario.email, cusuario.senha);
+    }
+    else
+    {
+      isExistUser = 1;
+      printf("Usuário selecionado => Nome: %s, CPF: %s, Email: %s\n", cusuario.nome, cusuario.cpf, cusuario.email);
+    }
+  }
+
+  if (isExistUser == 0)
+  {
+    printf("Não foi encontrado nenhum usuário com o CPF: %s\n", cpf_busca);
+    enterToContinue();
+    userAccess();
+    return;
   }
 
   fclose(file_temp);
   fclose(file);
+
+  int opc;
+
+  printf("Tem certeza que deseja excluir este usuário?.\n\n");
+  printf("[1] - SIM\n[2] - NAO.\n\n");
+
+  while (1)
+  {
+    scanf("%d", &opc);
+    fflush(stdin);
+
+    switch (opc)
+    {
+    case 1:
+      if (remove("data/users.csv") != 0)
+      {
+        printf(" Rua excluir banco de dados antigos.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      if (rename("data/users_temp.csv", "data/users.csv") != 0)
+      {
+        printf("Erro para nomear novo banco de dados.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      userAccess();
+      return;
+      break;
+    case 2:
+      if (remove("data/users_temp.csv") != 0)
+      {
+        printf(" Rua excluir banco de dados antigos.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      userAccess();
+      return;
+      break;
+    default:
+      printf("Opcao invalida, tente novamente.\n");
+      break;
+    }
+
+    return;
+  }
+
+  enterToContinue();
+  userAccess();
+}
+
+void searchUser()
+{
+  system("clear");
+
+  FILE *file;
+
+  char cpf_busca[12];
+  char linha_csv[216];
+
+  user cusuario;
+
+  file = fopen("data/users.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de usuários ou ainda nao foi realizado nenhum cadastro!");
+
+    return;
+  }
+
+  printf("Para buscar um usuario, insira o CPF: ");
+  scanf("%s", cpf_busca);
+  fflush(stdin);
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(cusuario.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(cusuario.cpf, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(cusuario.email, value);
+      }
+
+      // Column senha
+      if (column == 3)
+      {
+        strcpy(cusuario.senha, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    // verificar o CPF inserido
+    if (strcmp(cpf_busca, cusuario.cpf) == 0)
+    {
+      printf("Usuário selecionado => Nome: %s, CPF: %s, Email: %s\n", cusuario.nome, cusuario.cpf, cusuario.email);
+    }
+  }
+
+  fclose(file);
+
+  enterToContinue();
+  userAccess();
+}
+
+void listUser()
+{
+  system("clear");
+
+  FILE *file;
+
+  char linha_csv[216];
+  char exitFun[1];
+
+  user list_user;
+
+  file = fopen("data/users.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de usuários ou ainda nao foi realizado nenhum cadastro!");
+
+    return;
+  }
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    if (row == 1)
+      continue;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(list_user.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(list_user.cpf, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(list_user.email, value);
+      }
+
+      // Column senha
+      if (column == 3)
+      {
+        strcpy(list_user.senha, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    printf("Nome: %s, CPF: %s, Email: %s\n\n", list_user.nome, list_user.cpf, list_user.email);
+  }
+
+  fclose(file);
+  enterToContinue();
+  userAccess();
+}
+
+void enterToContinue()
+{
+  printf("Pressione enter para voltar\n");
+  char enter = 0;
+  while (enter != '\r' && enter != '\n')
+  {
+    enter = getchar();
+  }
 }
