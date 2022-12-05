@@ -45,3 +45,24 @@ void usersMenu(void)
 	printf("    |                                                    |\n");
 	printf("    |____________________________________________________|\n");
 }
+
+void collaboratorsMenu(void)
+{
+	setlocale(LC_ALL, ""); //Para acentuação
+	printf("\033[2J\033[1;1H");
+
+	printf("	      ========   Prote-g   ========\n\n");
+
+	printf("    .____________________________________________________.\n");
+	printf("    |                                                    |\n");
+	printf("    |                   Menu Colaboradores               |\n");
+	printf("    |____________________________________________________|\n");
+	printf("    |                                                    |\n");
+	printf("    |       [1] - Lista de Colaboradores                 |\n");
+  printf("    |       [2] - Buscar Colaborador                     |\n");
+  printf("    |       [3] - Excluir Colaborador                    |\n");
+	printf("    |       [4] - Cadastrar Colaborador                  |\n");
+	printf("    |       [5] - Voltar                                 |\n");
+	printf("    |                                                    |\n");
+	printf("    |____________________________________________________|\n");
+}
