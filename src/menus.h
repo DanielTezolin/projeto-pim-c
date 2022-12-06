@@ -87,3 +87,22 @@ void clientsMenu(void)
 	printf("    |                                                    |\n");
 	printf("    |____________________________________________________|\n");
 }
+
+void reportMenu(void)
+{
+	setlocale(LC_ALL, ""); //Para acentuação
+	printf("\033[2J\033[1;1H");
+
+	printf("	      ========   Prote-g   ========\n\n");
+
+	printf("    .____________________________________________________.\n");
+	printf("    |                                                    |\n");
+	printf("    |                   Menu Clientes                    |\n");
+	printf("    |____________________________________________________|\n");
+	printf("    |                                                    |\n");
+	printf("    |       [1] - Entradas                               |\n");
+  printf("    |       [2] - Saidas                                 |\n");
+	printf("    |       [3] - Voltar                                 |\n");
+	printf("    |                                                    |\n");
+	printf("    |____________________________________________________|\n");
+}

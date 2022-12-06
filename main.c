@@ -42,6 +42,7 @@ void userAccess(void);
 void usersMenu(void);
 void collaboratorsMenu(void);
 void clientsMenu(void);
+void reportMenu(void);
 
 void mainMenu(void);
 
@@ -61,6 +62,10 @@ void newClient(void);
 void listClients(void);
 void searchClient(void);
 void removeClient(void);
+
+void reportAcess(void);
+void generateReportEntry(void);
+void generateReportOutput(void);
 
 int main(void);
 
@@ -126,7 +131,7 @@ void mainAccess()
     clientsAccess();
     break;
   case 4:
-    clientsAccess();
+    reportAcess();
     break;
   case 5:
     exitProgram();
@@ -1298,6 +1303,220 @@ void removeClient()
 
   enterToContinue();
   clientsAccess();
+}
+
+void reportAcess()
+{
+  int menu = 0;
+
+  system("clear");
+  reportMenu();
+
+  printf("\nSelecione uma opcao e pressione ENTER: ");
+  scanf("%d", &menu);
+  fflush(stdin);
+
+  switch (menu)
+  {
+  case 1:
+    generateReportEntry();
+    break;
+  case 2:
+    generateReportOutput();
+    break;
+  case 3:
+    mainAccess();
+    break;
+  default:
+    printf("Opcao invalida, tente novamente.\n");
+    break;
+  }
+}
+
+void generateReportEntry()
+{
+  system("clear");
+
+  printf("	      ========   Clientes   ========\n\n");
+
+  FILE *file;
+
+  char linha_csv[216];
+  char exitFun[1];
+
+  clients list_clients;
+
+  file = fopen("data/clients.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de clientes ou ainda nao foi realizado nenhum cadastro!");
+    exit(1);
+    return;
+  }
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  float values_entries[10];
+  int index = 0;
+
+  float total_values;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    if (row == 1)
+      continue;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(list_clients.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(list_clients.cnpj, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(list_clients.email, value);
+      }
+
+      // Column mensal
+      if (column == 3)
+      {
+        strcpy(list_clients.mensal, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    printf("Nome: %s, CNPJ: %s, Salario: %s\n", list_clients.nome, list_clients.cnpj, list_clients.mensal);
+
+    values_entries[index] = atof(list_clients.mensal);
+
+    index = index + 1;
+  }
+
+  for (size_t i = 0; i < index; i++)
+  {
+    total_values = total_values + values_entries[i];
+  }
+
+  printf("\n\n Valor total ganho por mês: %f\n\n\n", total_values);
+
+  fclose(file);
+  enterToContinue();
+  reportAcess();
+}
+
+void generateReportOutput()
+{
+  system("clear");
+
+  printf("	      ========   Custos   ========\n\n");
+
+  FILE *file;
+
+  char linha_csv[216];
+  char exitFun[1];
+
+  collaborators list_collaborators;
+
+  file = fopen("data/collaborators.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de collaborators ou ainda nao foi realizado nenhum cadastro!");
+    exit(1);
+    return;
+  }
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  float values_entries[10];
+  int index = 0;
+
+  float total_values;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    if (row == 1)
+      continue;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(list_collaborators.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(list_collaborators.cpf, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(list_collaborators.email, value);
+      }
+
+      // Column salario
+      if (column == 3)
+      {
+        strcpy(list_collaborators.salario, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    printf("Nome: %s, CPF: %s, Valor mensal: %s\n", list_collaborators.nome, list_collaborators.cpf, list_collaborators.salario);
+
+    values_entries[index] = atof(list_collaborators.salario);
+
+    index = index + 1;
+  }
+
+  for (size_t i = 0; i < index; i++)
+  {
+    total_values = total_values + values_entries[i];
+  }
+
+  printf("\n\n Valor total gasto por mês: %f\n\n\n", total_values);
+
+  fclose(file);
+  enterToContinue();
+  reportAcess();
 }
 
 void enterToContinue()
