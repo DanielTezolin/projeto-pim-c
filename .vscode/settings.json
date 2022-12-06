@@ -9,6 +9,7 @@
   "conventionalCommits.scopes": [
     "usuarios",
     "Colaboradores",
-    "login"
+    "login",
+    "clientes"
   ]
 }

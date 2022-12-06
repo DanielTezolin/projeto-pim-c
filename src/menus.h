@@ -66,3 +66,24 @@ void collaboratorsMenu(void)
 	printf("    |                                                    |\n");
 	printf("    |____________________________________________________|\n");
 }
+
+void clientsMenu(void)
+{
+	setlocale(LC_ALL, ""); //Para acentuação
+	printf("\033[2J\033[1;1H");
+
+	printf("	      ========   Prote-g   ========\n\n");
+
+	printf("    .____________________________________________________.\n");
+	printf("    |                                                    |\n");
+	printf("    |                   Menu Clientes                    |\n");
+	printf("    |____________________________________________________|\n");
+	printf("    |                                                    |\n");
+	printf("    |       [1] - Lista de Clientes                      |\n");
+  printf("    |       [2] - Buscar Cliente                         |\n");
+  printf("    |       [3] - Excluir Cliente                        |\n");
+	printf("    |       [4] - Cadastrar Cliente                      |\n");
+	printf("    |       [5] - Voltar                                 |\n");
+	printf("    |                                                    |\n");
+	printf("    |____________________________________________________|\n");
+}

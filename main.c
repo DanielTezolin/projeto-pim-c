@@ -24,14 +24,14 @@ typedef struct
   char salario[52];
 } collaborators;
 
-// /*- Estrutura de clientes*/
-// typedef struct
-// {
-//   char nome[52];
-//   char email[100];
-//   char cpf[12];
-//   char salario[52];
-// } collaborators;
+/*- Estrutura de clientes*/
+typedef struct
+{
+  char nome[52];
+  char email[100];
+  char cnpj[12];
+  char mensal[52];
+} clients;
 
 void exitProgram(void);
 void enterToContinue(void);
@@ -41,6 +41,7 @@ void userAccess(void);
 
 void usersMenu(void);
 void collaboratorsMenu(void);
+void clientsMenu(void);
 
 void mainMenu(void);
 
@@ -55,13 +56,19 @@ void newCollaborators(void);
 void removeCollaborators(void);
 void searchCollaborators(void);
 
+void clientsAccess(void);
+void newClient(void);
+void listClients(void);
+void searchClient(void);
+void removeClient(void);
+
 int main(void);
 
 int main()
 {
   setlocale(LC_ALL, "Portuguese");
   system("clear");
-  login();
+  // login();
   mainAccess();
 
   return (0);
@@ -116,10 +123,10 @@ void mainAccess()
     collaboratorsAccess();
     break;
   case 3:
-    collaboratorsAccess();
+    clientsAccess();
     break;
   case 4:
-    collaboratorsAccess();
+    clientsAccess();
     break;
   case 5:
     exitProgram();
@@ -904,6 +911,393 @@ void searchCollaborators()
 
   enterToContinue();
   collaboratorsAccess();
+}
+
+void clientsAccess()
+{
+  int menu = 0;
+
+  system("clear");
+  clientsMenu();
+
+  printf("\nSelecione uma opcao e pressione ENTER: ");
+  scanf("%d", &menu);
+  fflush(stdin);
+
+  switch (menu)
+  {
+  case 1:
+    listClients();
+    break;
+  case 2:
+    searchClient();
+    break;
+  case 3:
+    removeClient();
+    break;
+  case 4:
+    newClient();
+    break;
+  case 5:
+    mainAccess();
+    break;
+  default:
+    printf("Opcao invalida, tente novamente.\n");
+    break;
+  }
+}
+
+void newClient()
+{
+  FILE *file;
+  file = fopen("data/clients.csv", "a");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de clientes ou ainda nao foi realizado nenhum cadastro!");
+
+    return;
+  }
+
+  clients clients_cad;
+
+  printf("\n\nNome: \n");
+  scanf("%s", clients_cad.nome);
+  fflush(stdin);
+
+  printf("\n\nCNPJ: \n");
+  scanf("%s", clients_cad.cnpj);
+  fflush(stdin);
+
+  printf("\n\nEmail: \n");
+  scanf("%s", clients_cad.email);
+  fflush(stdin);
+
+  printf("\n\nValor pago mensal: \n");
+  scanf("%s", clients_cad.mensal);
+  fflush(stdin);
+
+  printf("Nome: %s - CNPJ: %s - Email: %s - Valor mensal: %s  \n", clients_cad.nome, clients_cad.cnpj, clients_cad.email, clients_cad.mensal);
+
+  fprintf(file, "%s,%s,%s,%s\n", clients_cad.nome, clients_cad.cnpj, clients_cad.email, clients_cad.mensal);
+  fclose(file);
+
+  printf("Cliente cadastrado com sucesso\n");
+  enterToContinue();
+  clientsAccess();
+}
+
+void listClients()
+{
+  system("clear");
+
+  FILE *file;
+
+  char linha_csv[216];
+  char exitFun[1];
+
+  clients list_clients;
+
+  file = fopen("data/clients.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de clientes ou ainda nao foi realizado nenhum cadastro!");
+    exit(1);
+    return;
+  }
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    if (row == 1)
+      continue;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(list_clients.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(list_clients.cnpj, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(list_clients.email, value);
+      }
+
+      // Column mensal
+      if (column == 3)
+      {
+        strcpy(list_clients.mensal, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    printf("Nome: %s, CNPJ: %s, Email: %s, Valor mensal: %s\n\n", list_clients.nome, list_clients.cnpj, list_clients.email, list_clients.mensal);
+  }
+
+  fclose(file);
+  enterToContinue();
+  clientsAccess();
+}
+
+void searchClient()
+{
+  system("clear");
+
+  FILE *file;
+
+  char cnpj_busca[12];
+  char linha_csv[216];
+
+  clients cclients;
+
+  file = fopen("data/clients.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de usuários ou ainda nao foi realizado nenhum cadastro!");
+
+    return;
+  }
+
+  printf("Para buscar um Cliente, insira o CNPJ: ");
+  scanf("%s", cnpj_busca);
+  fflush(stdin);
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+        strcpy(cclients.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(cclients.cnpj, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(cclients.email, value);
+      }
+
+      // Column salario
+      if (column == 3)
+      {
+        strcpy(cclients.mensal, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    // verificar o CNPJ inserido
+    if (strcmp(cnpj_busca, cclients.cnpj) == 0)
+    {
+      printf("Cliente selecionado => Nome: %s, CNPJ: %s, Email: %s, Valor Mensal: %s\n", cclients.nome, cclients.cnpj, cclients.email, cclients.mensal);
+    }
+  }
+
+  fclose(file);
+
+  enterToContinue();
+  clientsAccess();
+}
+
+void removeClient()
+{
+  system("clear");
+
+  FILE *file;
+  FILE *file_temp;
+
+  char cnpf_busca[12];
+  char linha_csv[216];
+
+  clients cclients;
+
+  file = fopen("data/clients.csv", "r");
+
+  if (file == NULL)
+  {
+    printf("\n\nErro ao abrir arquivo de clientes ou ainda nao foi realizado nenhum cadastro!");
+
+    return;
+  }
+
+  file_temp = fopen("data/clients_temp.csv", "a");
+
+  if (file_temp == NULL)
+  {
+    printf("\n\nErro para criar arquivo temporário, não foi possível carregar essa função.");
+    return;
+  }
+
+  printf("Para deletar um colaborador, insira o CNPJ: ");
+  scanf("%s", cnpf_busca);
+  fflush(stdin);
+
+  int isExistUser = 0;
+
+  char buffer[1024];
+
+  int row = 0;
+  int column = 0;
+
+  while (fgets(buffer, 1024, file))
+  {
+    column = 0;
+    row++;
+
+    // Splitting a linha do csv
+    char *value = strtok(buffer, ",");
+
+    while (value)
+    {
+      // Column nome
+      if (column == 0)
+      {
+
+        strcpy(cclients.nome, value);
+      }
+
+      // Column cpf
+      if (column == 1)
+      {
+        strcpy(cclients.cnpj, value);
+      }
+
+      // Column email
+      if (column == 2)
+      {
+        strcpy(cclients.email, value);
+      }
+
+      // Column salario
+      if (column == 3)
+      {
+        strcpy(cclients.mensal, value);
+      }
+
+      // printf("Column: %d Value: %s\n", column, value);
+      value = strtok(NULL, ",");
+      column++;
+    }
+
+    // verificar o CPF inserido
+    if (strcmp(cnpf_busca, cclients.cnpj) != 0)
+    {
+      // printf("name: %s \n", ccollaborators.nome);
+      fprintf(file_temp, "%s,%s,%s,%s", cclients.nome, cclients.cnpj, cclients.email, cclients.mensal);
+    }
+    else
+    {
+      isExistUser = 1;
+      printf("Cliente selecionado => Nome: %s, CNPJ: %s, Email: %s, Valor Mensal: %s\n", cclients.nome, cclients.cnpj, cclients.email, cclients.mensal);
+    }
+  }
+
+  if (isExistUser == 0)
+  {
+    printf("Não foi encontrado nenhum cliente com o CNPJ: %s\n", cnpf_busca);
+    enterToContinue();
+    clientsAccess();
+    return;
+  }
+
+  fclose(file_temp);
+  fclose(file);
+
+  int opc;
+
+  printf("Tem certeza que deseja excluir este Cliente?.\n\n");
+  printf("[1] - SIM\n[2] - NAO.\n\n");
+
+  while (1)
+  {
+    scanf("%d", &opc);
+    fflush(stdin);
+
+    switch (opc)
+    {
+    case 1:
+      if (remove("data/clients.csv") != 0)
+      {
+        printf(" Rua excluir banco de dados antigos.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      if (rename("data/clients_temp.csv", "data/clients.csv") != 0)
+      {
+        printf("Erro para nomear novo banco de dados.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      clientsAccess();
+      return;
+      break;
+    case 2:
+      if (remove("data/clients_temp.csv") != 0)
+      {
+        printf("Erro para excluir banco de dados temporario.  Não foi possível concluir a operação\n");
+        exit(1);
+        return;
+      }
+
+      clientsAccess();
+      return;
+      break;
+    default:
+      printf("Opcao invalida, tente novamente.\n");
+      break;
+    }
+
+    return;
+  }
+
+  enterToContinue();
+  clientsAccess();
 }
 
 void enterToContinue()
