@@ -24,14 +24,14 @@ typedef struct
   char salario[52];
 } collaborators;
 
-/*- Estrutura de clientes*/
-typedef struct
-{
-  char nome[52];
-  char email[100];
-  char cpf[12];
-  char salario[52];
-} collaborators;
+// /*- Estrutura de clientes*/
+// typedef struct
+// {
+//   char nome[52];
+//   char email[100];
+//   char cpf[12];
+//   char salario[52];
+// } collaborators;
 
 void exitProgram(void);
 void enterToContinue(void);
@@ -61,7 +61,7 @@ int main()
 {
   setlocale(LC_ALL, "Portuguese");
   system("clear");
-  // login();
+  login();
   mainAccess();
 
   return (0);
